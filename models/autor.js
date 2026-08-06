@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Autor.belongsToMany(models.Livro, { through: models.LivroAutor, foreignKey: 'autorId' })
     }
   }
   Autor.init({

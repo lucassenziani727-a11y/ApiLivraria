@@ -1,4 +1,5 @@
 'use strict';
+const { model } = require('mongoose');
 const {
   Model
 } = require('sequelize');
@@ -10,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Pessoa.hasMany(models.Emprestimo,{foreignKey: 'pessoaId'})
     }
   }
   Pessoa.init({
