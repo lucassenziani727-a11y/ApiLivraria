@@ -1,4 +1,4 @@
-import db from '../models/index.js'
+import db from '../models/index.cjs'
 
 class PessoaController{
     static async criarPessoa(req,res){ 
