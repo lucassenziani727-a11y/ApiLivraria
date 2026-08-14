@@ -18,6 +18,7 @@ class PessoaController{
         const listaPessoa = await db.Pessoa.findAll({})
         res.status(200).json({message:'pessoa listada com sucesso', Pessoa: listaPessoa})
     }catch(erro){
+        console.log(erro)
         res.status(500).json({message: 'erro interno do servidor'})
     }
   }
