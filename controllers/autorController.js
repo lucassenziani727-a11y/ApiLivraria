@@ -24,7 +24,7 @@ class AutorController{
   static async listaAutorPorId(req,res){
     try{
     const id = req.params.id
-    const autorEncontrado = await db.Autor.findByPk(id)
+    const autorEncontrado = await db.Autor.findByPk(id, {include: [{model: db.Livro, as:'livros', required: true}]})
     if(autorEncontrado === null){
         res.status(404).json({message: 'autor nao encontrado'})
     }else{

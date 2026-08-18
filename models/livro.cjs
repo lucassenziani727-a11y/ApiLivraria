@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Livro.hasMany(models.Emprestimo, {foreignKey: 'livroId'});
-      Livro.belongsToMany(models.Autor, {through: models.LivroAutor, foreignKey: 'livroId'})
+      Livro.belongsToMany(models.Autor, {through: models.LivroAutor, foreignKey: 'livroId', as:'autores'})
     }
   }
   Livro.init({
