@@ -14,6 +14,5 @@ app.use(pessoaRoutes);
 app.use(livroRoutes);
 app.use(emprestimoRoutes);
 app.use(autorRoutes);
-app.listen(process.env.PORT, () =>{
-    console.log('servidor escutando')
-});
+
+export default app;
