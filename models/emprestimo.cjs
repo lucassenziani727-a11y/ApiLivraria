@@ -15,12 +15,23 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Emprestimo.init({
-    data_emprestimo: DataTypes.DATE,
-    devolucao_prevista: DataTypes.DATE,
-    devolucao_real: DataTypes.DATE,
-    status: DataTypes.STRING,
-    pessoaId: DataTypes.INTEGER,
-    livroId: DataTypes.INTEGER
+    data_emprestimo:{type:DataTypes.DATE,
+      allowNull: false
+    },
+    devolucao_prevista:{type:DataTypes.DATE,
+      allowNull: false
+    },
+    devolucao_real: DataTypes.DATE
+    ,
+    status: {type:DataTypes.STRING,
+      allowNull: false
+    },
+    pessoaId: {type:DataTypes.INTEGER,
+      allowNull: false
+    },
+    livroId: {type:DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Emprestimo',

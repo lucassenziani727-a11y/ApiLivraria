@@ -14,8 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Autor.init({
-    nome: DataTypes.STRING,
-    data_nascimento: DataTypes.DATE
+    nome: {type:DataTypes.STRING,
+      allowNull: false
+    },
+    data_nascimento: {type:DataTypes.DATE,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Autor',

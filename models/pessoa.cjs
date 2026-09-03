@@ -15,9 +15,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Pessoa.init({
-    nome: DataTypes.STRING,
-    cpf: DataTypes.STRING,
-    telefone: DataTypes.STRING
+    nome: {type:DataTypes.STRING,
+      allowNull: false
+    },
+    cpf: {type:DataTypes.STRING,
+      allowNull: false
+    },
+    telefone: {type:DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Pessoa',

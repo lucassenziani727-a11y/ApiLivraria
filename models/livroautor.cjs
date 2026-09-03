@@ -14,8 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   LivroAutor.init({
-    livroId: DataTypes.INTEGER,
-    autorId: DataTypes.INTEGER
+    livroId: {type:DataTypes.INTEGER,
+      allowNull: false
+    },
+    autorId: {type:DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'LivroAutor',
