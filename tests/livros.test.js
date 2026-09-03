@@ -27,4 +27,15 @@ describe('Agrupando testes dos livros', () =>{
         expect(res.status).toBe(201);
         expect(res.body.Livro).toHaveProperty('titulo', 'Dom Casmurro');
     });
+
+    it('Deve criar livro mesmo sem titulo, pois nao ha validacao', async () => {
+        const novoLivro = ({
+            ano_lancamento: 1899,
+            genero: 'Romance',
+            status: 'Disponível'
+        });
+        const res = await request(app).post('/livros').send(novoLivro);
+        expect(res.status).toBe(201);
+        expect(res.body.Livro).not.toHaveProperty('titulo');
+    });
 });
