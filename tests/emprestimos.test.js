@@ -30,12 +30,24 @@ describe('Agrupando Testes de emprestimos', () => {
      status: 'Emprestado',
      pessoaId: novaPessoa.id,
      livroId: novoLivro.id
-  };
+    };
 
     const res = await request(app).post("/emprestimos").send(dadosEmprestimo)
     expect(res.status).toBe(201);
     expect(res.body.Emprestimo).toHaveProperty('livroId', novoLivro.id);
     expect(res.body.Emprestimo).toHaveProperty('pessoaId', novaPessoa.id);
     expect(res.body.Emprestimo).toHaveProperty('status', 'Emprestado');
-   });
+    })
+
+    it('Criar um emprestimo sem livroId', async () =>{
+        const dadosEmprestimo = {
+     data_emprestimo: '2026-09-01',
+     devolucao_prevista: '2026-09-15',
+     status: 'Emprestado',
+     pessoaId: novaPessoa.id,
+     };
+     const res = await request(app).post("/emprestimos").send(dadosEmprestimo);
+     expect(res.status).toBe(400);
+     expect(res.body).toHaveProperty('message', 'nao foi possivel fazer o cadastro');
+    });
 });
