@@ -50,4 +50,16 @@ describe('Agrupando Testes de emprestimos', () => {
      expect(res.status).toBe(400);
      expect(res.body).toHaveProperty('message', 'nao foi possivel fazer o cadastro');
     });
+
+    it('Deve retornar a lista vazia de emprestimos', async() =>{
+      const res = await request(app).get("/emprestimos");
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({"Emprestimo": [], "message": "Emprestimo listado com sucesso"});
+    });
+
+    it('Deve retornar erro 404 quando buscar um emprestimo que não existe', async() =>{
+        const res = await request(app).get("/emprestimos/444444");
+        expect(res.status).toBe(404);
+        expect(res.body).toHaveProperty('message', 'Emprestimo nao encontrado')
+    });
 });
