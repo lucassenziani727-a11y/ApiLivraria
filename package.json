@@ -7,7 +7,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --runInBand",
     "dev": "nodemon server.js"
   },
   "dependencies": {
