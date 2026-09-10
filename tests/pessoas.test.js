@@ -59,4 +59,29 @@ describe('Agrupando testes das pessoas', () =>{
         expect(res.status).toBe(404);
         expect(res.body).toHaveProperty('message', 'pessoa nao encontrada')
     });
+
+    it('Deve atualizar a pessoa', async () =>{
+        const novaPessoa = await db.Pessoa.create({
+            nome:'Luca',
+            cpf:'12345612346',
+            telefone:'426100-222'
+        });
+        const res = await request(app).put(`/pessoas/${novaPessoa.id}`).send({nome: 'Lucas'});
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/pessoas/${novaPessoa.id}`);
+        expect(res2.status).toBe(200);
+        expect(res2.body.Pessoa).toHaveProperty('nome', 'Lucas')
+    });
+
+    it('Deve deletar uma pessoa', async () =>{
+        const novaPessoa = await db.Pessoa.create({
+            nome:'Luca',
+            cpf:'12345612346',
+            telefone:'426100-222',});
+        const res = await request(app).delete(`/pessoas/${novaPessoa.id}`);
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/pessoas/${novaPessoa.id}`);
+        expect(res2.status).toBe(404);
+        expect(res2.body).toHaveProperty('message','pessoa nao encontrada');
+    });
 });

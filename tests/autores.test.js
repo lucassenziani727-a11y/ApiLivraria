@@ -54,4 +54,28 @@ describe('Agrupando testes dos autores', () =>{
         expect(res.status).toBe(404);
         expect(res.body).toHaveProperty('message', 'autor nao encontrado')
     });
+
+    it('Deve atualizar um autor', async () =>{
+        const novoAutor = await db.Autor.create({
+            nome: 'Henrique',
+            data_nascimento: '2001-12-02',
+        });
+        const res = await request(app).put(`/autores/${novoAutor.id}`).send({nome: 'Novo nome'});
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/autores/${novoAutor.id}`);
+        expect(res2.status).toBe(200);
+        expect(res2.body.Autor).toHaveProperty('nome', 'Novo nome')
+    });
+
+    it('Deve deletar um autor', async () =>{
+        const novoAutor = await db.Autor.create({
+            nome: 'Henrique',
+            data_nascimento: '2001-12-02',
+        });
+        const res = await request(app).delete(`/autores/${novoAutor.id}`);
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/autores/${novoAutor.id}`);
+        expect(res2.status).toBe(404);
+        expect(res2.body).toHaveProperty('message','autor nao encontrado');
+    });
 });
