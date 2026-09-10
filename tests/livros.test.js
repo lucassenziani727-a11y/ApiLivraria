@@ -2,6 +2,7 @@ import request from 'supertest';
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import app from '../app.js';
 import db from '../models/index.cjs'
+import { ExplainVerbosity } from 'mongodb';
 
 const livro = db.Livro
 
@@ -41,7 +42,6 @@ describe('Agrupando testes dos livros', () =>{
 
     it('Deve retornar um livro pelo id', async () =>{
         const novoLivro = ({
-            id: 1,
             titulo: "Senhor dos Aneis",
             ano_lancamento: 2000,
             genero: "Ação",
@@ -60,5 +60,29 @@ describe('Agrupando testes dos livros', () =>{
         const res = await request(app).get('/livros/999999');
         expect(res.status).toBe(404);
         expect(res.body).toHaveProperty('message', 'livro nao encontrado')
+    });
+
+    it('Deve retornar um livro atualizado', async () =>{
+        const novoLivro = await db.Livro.create({
+            titulo:'Titulo antigo', ano_lancamento: 2000,
+            genero: "Ação",
+            status: "Alugado",})
+        const res = await request(app).put(`/livros/${novoLivro.id}`).send({titulo: 'Novo titulo'});
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/livros/${novoLivro.id}`);
+        expect(res2.status).toBe(200);
+        expect(res2.body.Livro).toHaveProperty('titulo', 'Novo titulo');
+    });
+     
+    it('Deve deletar um livro', async () =>{
+        const novoLivro = await db.Livro.create({
+            titulo:'Titulo antigo', ano_lancamento: 2000,
+            genero: "Ação",
+            status: "Alugado",});
+        const res = await request(app).delete(`/livros/${novoLivro.id}`);
+        expect(res.status).toBe(200);
+        const res2 = await request(app).get(`/livros/${novoLivro.id}`);
+        expect(res2.status).toBe(404);
+        expect(res2.body).toHaveProperty('message','livro nao encontrado')
     });
 });
