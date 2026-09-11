@@ -1,14 +1,17 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
 import app from '../app.js';
 import db from '../models/index.cjs'
-import { ExplainVerbosity } from 'mongodb';
 
-const livro = db.Livro
+const livro = db.Livro;
+const livroAutor = db.LivroAutor;
+const emprestimo = db.Emprestimo;
 
 describe('Agrupando testes dos livros', () =>{
     beforeEach(async () =>{
-    await livro.destroy({where: {}, truncate: true})
+    await livroAutor.destroy({ where: {} });
+        await emprestimo.destroy({ where: {} });
+        await livro.destroy({ where: {} });
     }); 
     
     it('Deve retornar a lista vazia de livros', async () =>{
@@ -83,6 +86,10 @@ describe('Agrupando testes dos livros', () =>{
         expect(res.status).toBe(200);
         const res2 = await request(app).get(`/livros/${novoLivro.id}`);
         expect(res2.status).toBe(404);
-        expect(res2.body).toHaveProperty('message','livro nao encontrado')
+        expect(res2.body).toHaveProperty('message','livro nao encontrado');
     });
+
+    afterAll(async () => {
+    await db.sequelize.close();
+   });
 });

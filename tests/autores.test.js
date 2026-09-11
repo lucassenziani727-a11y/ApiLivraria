@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
 import app from '../app.js';
 import db from '../models/index.cjs'
 
@@ -78,4 +78,8 @@ describe('Agrupando testes dos autores', () =>{
         expect(res2.status).toBe(404);
         expect(res2.body).toHaveProperty('message','autor nao encontrado');
     });
+
+    afterAll(async () => {
+        await db.sequelize.close();
+       });
 });

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterAll} from '@jest/globals';
 import app from '../app.js';
 import db from '../models/index.cjs'
 
@@ -7,7 +7,7 @@ const pessoa = db.Pessoa
 
 describe('Agrupando testes das pessoas', () =>{
     beforeEach(async () =>{
-    await pessoa.destroy({where: {}, truncate: true})
+    await pessoa.destroy({where: {}})
     }); 
     
     it('Deve retornar a lista vazia de pessoas', async () =>{
@@ -84,4 +84,8 @@ describe('Agrupando testes das pessoas', () =>{
         expect(res2.status).toBe(404);
         expect(res2.body).toHaveProperty('message','pessoa nao encontrada');
     });
+
+    afterAll(async () => {
+        await db.sequelize.close();
+       });
 });

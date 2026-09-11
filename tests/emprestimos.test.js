@@ -1,5 +1,5 @@
 import  request  from "supertest";
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
 import app from '../app.js';
 import db from '../models/index.cjs'
 
@@ -22,6 +22,7 @@ describe('Agrupando Testes de emprestimos', () => {
     novoLivro = await db.Livro.create({ titulo: 'Coringa', ano_lancamento: 2024, genero: 'Ficção', status: 'Disponível' });
     novaPessoa = await db.Pessoa.create({ nome: 'Lucas', cpf: '12345678910', telefone: '439439-000' });
   });
+
 
   it('Criando emprestimo com id', async () =>{
     const dadosEmprestimo = {
@@ -62,4 +63,23 @@ describe('Agrupando Testes de emprestimos', () => {
         expect(res.status).toBe(404);
         expect(res.body).toHaveProperty('message', 'Emprestimo nao encontrado')
     });
+
+    it('Deve atualizar o emprestimo', async () =>{
+     const novoEmprestimo = await db.Emprestimo.create({
+     data_emprestimo: '2026-09-01',
+     devolucao_prevista: '2026-09-15',
+     status: 'Emprestado',
+     pessoaId: novaPessoa.id,
+     livroId: novoLivro.id
+     });
+      const res = await request(app).put(`/emprestimos/${novoEmprestimo.id}`).send({status: 'Devolvido'});
+      expect(res.status).toBe(200);
+      const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`);
+      expect(res2.status).toBe(200);
+      expect(res2.body.Emprestimo).toHaveProperty('status', 'Devolvido');
+    });
+
+     afterAll(async () => {
+         await db.sequelize.close();
+        });
 });
