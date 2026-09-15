@@ -9,7 +9,7 @@ const emprestimo = db.Emprestimo;
 
 describe('Agrupando testes dos livros', () =>{
     beforeEach(async () =>{
-    await livroAutor.destroy({ where: {} });
+        await livroAutor.destroy({ where: {} });
         await emprestimo.destroy({ where: {} });
         await livro.destroy({ where: {} });
     }); 

@@ -4,10 +4,12 @@ import app from '../app.js';
 import db from '../models/index.cjs'
 
 const pessoa = db.Pessoa
+const emprestimo = db.Emprestimo
+const livroAutor = db.LivroAutor
 
 describe('Agrupando testes das pessoas', () =>{
     beforeEach(async () =>{
-    await pessoa.destroy({where: {}})
+        await pessoa.destroy({where: {}})
     }); 
     
     it('Deve retornar a lista vazia de pessoas', async () =>{
