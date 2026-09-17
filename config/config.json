@@ -7,7 +7,7 @@
   "test": {
      "database": "database_test",
      "dialect": "sqlite",
-     "storage": "./config/database_test.sqlite"
+     "storage": ":memory:"
   },
   "production": {
      "database": "database_production",
