@@ -79,6 +79,22 @@ describe('Agrupando Testes de emprestimos', () => {
       expect(res2.body.Emprestimo).toHaveProperty('status', 'Devolvido');
     });
 
+    it('Deve deletar emprestimo', async () =>{
+      const novoEmprestimo = await db.emprestimo.create({
+     data_emprestimo: '2026-09-01',
+     devolucao_prevista: '2026-09-15',
+     status: 'Emprestado',
+     pessoaId: novaPessoa.id,
+     livroId: novoLivro.id
+     });
+
+     const res = await request(app).delete(`/emprestimos/${novoEmprestimo.id}`);
+     expect(res.status).toBe(200);
+     const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`);
+     expect(res2.status).toBe(404);
+     expect(res2.body).toHaveProperty('message', 'Emprestimo nao encontrado')
+    })
+
      afterAll(async () => {
          await db.sequelize.close();
         });
