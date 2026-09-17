@@ -8,7 +8,7 @@ class LivroAutorController{
             const listaLivroPorId = await db.Livro.findByPk(id);
             const listaAutorPorId = await db.Autor.findByPk(idAutor);
             if(listaAutorPorId === null || listaLivroPorId === null){
-                res.status(404).json({message: 'esse livro e autor nao existem'});
+                res.status(404).json({message: 'esse livro ou autor nao existem'});
             }else{
                 const novaAssociacao = await db.LivroAutor.create({
                      livroId: id,
