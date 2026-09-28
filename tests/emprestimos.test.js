@@ -80,7 +80,7 @@ describe('Agrupando Testes de emprestimos', () => {
     });
 
     it('Deve deletar emprestimo', async () =>{
-      const novoEmprestimo = await db.emprestimo.create({
+      const novoEmprestimo = await db.Emprestimo.create({
      data_emprestimo: '2026-09-01',
      devolucao_prevista: '2026-09-15',
      status: 'Emprestado',

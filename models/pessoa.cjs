@@ -1,5 +1,4 @@
 'use strict';
-const { model } = require('mongoose');
 const {
   Model
 } = require('sequelize');
@@ -23,10 +22,24 @@ module.exports = (sequelize, DataTypes) => {
     },
     telefone: {type:DataTypes.STRING,
       allowNull: false
-    }
+    },
+    email: {type:DataTypes.STRING, 
+      allowNull:false, 
+      nique:true},
+    senha: {type:DataTypes.STRING,
+      allowNull:false
+    }  
   }, {
     sequelize,
     modelName: 'Pessoa',
+    defaultScope:{
+      attributes: {exclude: ['senha']}
+    },
+    scopes:{
+      comSenha:{
+        attributes:{}
+      }
+    }
   });
   return Pessoa;
 };

@@ -1,12 +1,14 @@
 import express from 'express';
 import PessoaController from '../controllers/pessoaController.js'
+import authMiddleWare from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
 router.post('/pessoas', PessoaController.criarPessoa);
-router.get('/pessoas', PessoaController.listarPessoa);
-router.get('/pessoas/:id', PessoaController.listaPessoaPorId);
-router.put('/pessoas/:id', PessoaController.atualizaPessoa);
-router.delete('/pessoas/:id', PessoaController.deletaPessoa);
+router.post('/login', PessoaController.login);
+router.get('/pessoas', authMiddleWare, PessoaController.listarPessoa);
+router.get('/pessoas/:id', authMiddleWare,  PessoaController.listaPessoaPorId);
+router.put('/pessoas/:id', authMiddleWare, PessoaController.atualizaPessoa);
+router.delete('/pessoas/:id', authMiddleWare,  PessoaController.deletaPessoa);
 
 export default router
