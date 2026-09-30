@@ -4,8 +4,9 @@ import pessoaService from '../services/pessoaService.js'
 class PessoaController{
     static async criarPessoa(req,res){ 
         try{ 
-        const novaPessoa = await pessoaService.cadastrar(req.body)
-        res.status(201).json({message: 'pessoa criada', Pessoa: novaPessoa})
+        const novaPessoa = await pessoaService.cadastrar(req.body);
+        const { senha, ...pessoaSemSenha } = novaPessoa.toJSON()
+        res.status(201).json({message: 'pessoa criada', Pessoa: pessoaSemSenha})
        }catch(erro){
         if(erro.name === 'SequelizeValidationError'){
             res.status(400).json({message: 'nao foi possivel fazer o cadastro'})
@@ -52,7 +53,7 @@ class PessoaController{
   static async atualizaPessoa(req,res){
     try{
         const id = req.params.id
-        const pessoaAtualizada = await db.Pessoa.update(req.body, { where: { id: id } });
+        const pessoaAtualizada = await pessoaService.atualizar(id, req.body);
         if(pessoaAtualizada[0] === 0){
             res.status(404).json({message: 'pessoa nao encontrada'})
         }else{

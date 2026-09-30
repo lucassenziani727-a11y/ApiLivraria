@@ -2,6 +2,7 @@ import {compare, hash} from 'bcryptjs';
 import db from '../models/index.cjs';
 import  jwt  from 'jsonwebtoken';
 import jwtConfig from '../config/jwt.js';
+import { where } from 'sequelize';
 
 async function cadastrar(dto) {
     const hashSenha = await hash(dto.senha,10);
@@ -34,4 +35,16 @@ async function login(dto) {
     return acessToken
 }
 
-export default {cadastrar,login}
+async function atualizar(id, dto) {
+    const dadosParaAtualizar = {...dto};
+
+    if(dto.senha !== undefined){
+        dadosParaAtualizar.senha = await hash(dto.senha,10);
+    }
+
+    const resultado = await db.Pessoa.update(dadosParaAtualizar, {where:{id: id}})
+
+    return resultado
+}
+
+export default {cadastrar,login, atualizar}
