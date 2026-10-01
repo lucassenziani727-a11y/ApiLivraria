@@ -5,7 +5,11 @@ import jwtConfig from '../config/jwt.js';
 import { where } from 'sequelize';
 
 async function cadastrar(dto) {
-    const hashSenha = await hash(dto.senha,10);
+    let hashSenha = undefined
+
+    if(dto.senha !== undefined){
+        hashSenha = await hash(dto.senha, 10);
+    }
 
     const novaPessoa = await db.Pessoa.create({...dto, senha: hashSenha});
 
