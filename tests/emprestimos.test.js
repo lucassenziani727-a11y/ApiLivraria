@@ -20,7 +20,8 @@ describe('Agrupando Testes de emprestimos', () => {
     await pessoa.destroy({ where: {}, truncate: true });
 
     novoLivro = await db.Livro.create({ titulo: 'Coringa', ano_lancamento: 2024, genero: 'Ficção', status: 'Disponível' });
-    novaPessoa = await db.Pessoa.create({ nome: 'Lucas', cpf: '12345678910', telefone: '439439-000' });
+    novaPessoa = await db.Pessoa.create({ nome: 'Lucas', cpf: '12345678910', telefone: '439439-000', email: 'emprestimo@teste.com',
+    senha: 'senha123' });
   });
 
 
