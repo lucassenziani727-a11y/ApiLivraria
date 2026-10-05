@@ -20,8 +20,7 @@ class PessoaController{
     try{
      const token = await pessoaService.login(req.body);
      res.status(200).json({accessToken: token})
-    }catch(erro){
-        console.log(erro)
+    }catch(erro){  
      if( erro.message === 'Essa senha ou email nao existem'){
         res.status(401).json({message: erro.message})
      }else{
@@ -34,8 +33,7 @@ class PessoaController{
         const listaPessoa = await db.Pessoa.findAll({})
         res.status(200).json({message:'pessoa listada com sucesso', Pessoa: listaPessoa})
     }catch(erro){
-        console.log(erro)
-        res.status(500).json({message: 'erro interno do servidor'})
+    res.status(500).json({message: 'erro interno do servidor'})
     }
   }
   static async listaPessoaPorId(req,res){
