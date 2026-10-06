@@ -18,6 +18,13 @@ class PessoaController{
 
   static async login(req,res){
     try{
+        const { email, senha } = req.body;
+
+        if (!email || !senha) {
+          return res.status(400).json({
+          message: 'email e senha são obrigatórios'
+        });
+        }
      const token = await pessoaService.login(req.body);
      res.status(200).json({accessToken: token})
     }catch(erro){  
