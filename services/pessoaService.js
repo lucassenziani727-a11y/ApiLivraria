@@ -3,6 +3,7 @@ import db from '../models/index.cjs';
 import  jwt  from 'jsonwebtoken';
 import jwtConfig from '../config/jwt.js';
 import { where } from 'sequelize';
+import { gerarRefreshToken } from '../utils/refreshToken.js'
 
 async function cadastrar(dto) {
     let hashSenha = undefined
@@ -29,14 +30,18 @@ async function login(dto) {
         throw new Error('Essa senha ou email nao existem')
     }
 
-    const acessToken = jwt.sign({
+    const accessToken = jwt.sign({
         id: pessoa.id,
         email: pessoa.email,
     },jwtConfig.secret,{
-    expiresIn: 86400 
-    })
+    expiresIn: '15m' 
+    });
 
-    return acessToken
+    const {token, tokenHash, expiresAt} = gerarRefreshToken();
+
+   await db.RefreshToken.create({pessoaId: pessoa.id, tokenHash, expiresAt})
+
+    return {accessToken, refreshToken: token}
 }
 
 async function atualizar(id, dto) {

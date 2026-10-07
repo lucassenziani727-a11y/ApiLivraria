@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Pessoa.hasMany(models.Emprestimo,{foreignKey: 'pessoaId'})
+      Pessoa.hasMany(models.RefreshToken, { foreignKey: 'pessoaId', onDelete: 'CASCADE' });
     }
   }
   Pessoa.init({
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     email: {type:DataTypes.STRING, 
       allowNull:false, 
-      nique:true},
+      unique:true},
     senha: {type:DataTypes.STRING,
       allowNull:false
     }  
