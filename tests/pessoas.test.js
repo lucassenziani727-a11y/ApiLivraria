@@ -20,12 +20,11 @@ describe('Agrupando testes das pessoas', () =>{
          senha: 'senha123'
         };
 
-        const cadastrarPessoaTeste = await pessoaService.cadastrar(dadosPessoaTeste);
-        const fazerLoginPessoaTeste = await pessoaService.login({
+        const {accessToken} = await pessoaService.login({
          email: 'teste@teste.com',
          senha: 'senha123'})
 
-         token = fazerLoginPessoaTeste
+         token = accessToken;
 
     })
     beforeEach(async () =>{
