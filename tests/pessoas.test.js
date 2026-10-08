@@ -20,6 +20,8 @@ describe('Agrupando testes das pessoas', () =>{
          senha: 'senha123'
         };
 
+     await pessoaService.cadastrar(dadosPessoaTeste)
+
         const {accessToken} = await pessoaService.login({
          email: 'teste@teste.com',
          senha: 'senha123'})
