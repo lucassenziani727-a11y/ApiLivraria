@@ -6,6 +6,8 @@ const router = express.Router()
 
 router.post('/pessoas', PessoaController.criarPessoa);
 router.post('/login', PessoaController.login);
+router.post('/refresh', PessoaController.refresh);
+router.post('/logout', PessoaController.logout);
 router.get('/pessoas', authMiddleWare, PessoaController.listarPessoa);
 router.get('/pessoas/:id', authMiddleWare,  PessoaController.listaPessoaPorId);
 router.put('/pessoas/:id', authMiddleWare, PessoaController.atualizaPessoa);

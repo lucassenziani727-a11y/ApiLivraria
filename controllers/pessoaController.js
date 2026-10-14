@@ -17,7 +17,7 @@ class PessoaController{
   }
 
   static async login(req,res){
-    try{
+     try{
         const { email, senha } = req.body;
 
         if (!email || !senha) {
@@ -27,7 +27,7 @@ class PessoaController{
         }
      const {accessToken, refreshToken} = await pessoaService.login(req.body);
      res.status(200).json({accessToken, refreshToken})
-    }catch(erro){  
+     }catch(erro){  
      if( erro.message === 'Essa senha ou email nao existem'){
         res.status(401).json({message: erro.message})
      }else{
@@ -36,6 +36,43 @@ class PessoaController{
      }
     }
   }
+
+  static async refresh(req, res) {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({ message: 'refreshToken é obrigatório' });
+        }
+
+        const tokens = await pessoaService.refresh(refreshToken);
+        res.status(200).json(tokens);
+    } catch (erro) {
+        if (erro.message === 'Refresh token invalido ou expirado') {
+            res.status(401).json({ message: erro.message });
+        } else {
+            console.error(erro);
+            res.status(500).json({ message: 'erro interno do servidor' });
+        }
+    }
+}
+
+static async logout(req, res) {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({ message: 'refreshToken é obrigatório' });
+        }
+
+        await pessoaService.logout(refreshToken);
+        res.status(200).json({ message: 'logout realizado com sucesso' });
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({ message: 'erro interno do servidor' });
+    }
+}
+
   static async listarPessoa(req,res){
     try{
         const listaPessoa = await db.Pessoa.findAll({})
