@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class RefreshToken extends Model {
     static associate(models) {
-      RefreshToken.belongsTo(models.RefreshToken, {foreignKey: 'pessoaId', onDelete: 'CASCADE'});
+      RefreshToken.belongsTo(models.Pessoa, {foreignKey: 'pessoaId', onDelete: 'CASCADE'});
     }
   }
   RefreshToken.init({
