@@ -1,11 +1,19 @@
 import request from 'supertest';
 import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
+import jwt from 'jsonwebtoken';
+import jwtConfig from '../config/jwt.js';
 import app from '../app.js';
 import db from '../models/index.cjs';
 
 const livro = db.Livro;
 const autor = db.Autor;
 const livroAutor = db.LivroAutor;
+
+const token = jwt.sign(
+    { id: 1, email: 'teste@teste.com' },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.accessExpiresIn }
+);
 
 describe('agrupando testes de livroAutor', () => {
 
@@ -21,7 +29,7 @@ describe('agrupando testes de livroAutor', () => {
      });
 
      it('deve criar uma associação entre livro e autor com sucesso', async () =>{
-      const res = await request(app).post(`/livros/${novoLivro.id}/autores`).send({autorId: novoAutor.id});
+      const res = await request(app).post(`/livros/${novoLivro.id}/autores`).send({autorId: novoAutor.id}).set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('message', 'Associação criada com sucesso')
       const associacao = await livroAutor.findOne({where: {livroId: novoLivro.id, autorId: novoAutor.id}});
@@ -29,15 +37,22 @@ describe('agrupando testes de livroAutor', () => {
      });
 
      it('deve retornar erro 404 caso livro nao for encontrado', async () =>{
-      const res = await request(app).post(`/livros/9999/autores`).send({autorId: novoAutor.id});
+      const res = await request(app).post(`/livros/9999/autores`).send({autorId: novoAutor.id}).set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('message', 'esse livro ou autor nao existem')
      });
 
      it('deve retornar erro 404 caso autor nao for encontrado', async () =>{
-      const res = await request(app).post(`/livros/${novoLivro.id}/autores`).send({autorId: 9999});
+      const res = await request(app).post(`/livros/${novoLivro.id}/autores`).send({autorId: 9999}).set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('message', 'esse livro ou autor nao existem')
+     });
+
+     it('deve retornar 401 sem token e não criar a associação', async () =>{
+      const res = await request(app).post(`/livros/${novoLivro.id}/autores`).send({autorId: novoAutor.id});
+      expect(res.status).toBe(401);
+      const associacao = await livroAutor.findOne({where: {livroId: novoLivro.id, autorId: novoAutor.id}});
+      expect(associacao).toBeNull();
      });
 
      afterAll(async () =>{

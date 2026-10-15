@@ -1,11 +1,19 @@
 import  request  from "supertest";
 import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
+import jwt from 'jsonwebtoken';
 import app from '../app.js';
 import db from '../models/index.cjs'
+import jwtConfig from '../config/jwt.js';
 
 const emprestimo = db.Emprestimo;
 const livro = db.Livro;
 const pessoa = db.Pessoa;
+
+const token = jwt.sign(
+    { id: 1, email: 'teste@teste.com' },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.accessExpiresIn }
+);
 
 describe('Agrupando Testes de emprestimos', () => {
   
@@ -34,7 +42,7 @@ describe('Agrupando Testes de emprestimos', () => {
      livroId: novoLivro.id
     };
 
-    const res = await request(app).post("/emprestimos").send(dadosEmprestimo)
+    const res = await request(app).post("/emprestimos").send(dadosEmprestimo).set('Authorization', `Bearer ${token}`)
     expect(res.status).toBe(201);
     expect(res.body.Emprestimo).toHaveProperty('livroId', novoLivro.id);
     expect(res.body.Emprestimo).toHaveProperty('pessoaId', novaPessoa.id);
@@ -48,19 +56,19 @@ describe('Agrupando Testes de emprestimos', () => {
      status: 'Emprestado',
      pessoaId: novaPessoa.id,
      };
-     const res = await request(app).post("/emprestimos").send(dadosEmprestimo);
+     const res = await request(app).post("/emprestimos").send(dadosEmprestimo).set('Authorization', `Bearer ${token}`);
      expect(res.status).toBe(400);
      expect(res.body).toHaveProperty('message', 'nao foi possivel fazer o cadastro');
     });
 
     it('Deve retornar a lista vazia de emprestimos', async() =>{
-      const res = await request(app).get("/emprestimos");
+      const res = await request(app).get("/emprestimos").set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(200);
       expect(res.body).toEqual({"Emprestimo": [], "message": "Emprestimo listado com sucesso"});
     });
 
     it('Deve retornar erro 404 quando buscar um emprestimo que não existe', async() =>{
-        const res = await request(app).get("/emprestimos/444444");
+        const res = await request(app).get("/emprestimos/444444").set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(404);
         expect(res.body).toHaveProperty('message', 'Emprestimo nao encontrado')
     });
@@ -73,9 +81,9 @@ describe('Agrupando Testes de emprestimos', () => {
      pessoaId: novaPessoa.id,
      livroId: novoLivro.id
      });
-      const res = await request(app).put(`/emprestimos/${novoEmprestimo.id}`).send({status: 'Devolvido'});
+      const res = await request(app).put(`/emprestimos/${novoEmprestimo.id}`).send({status: 'Devolvido'}).set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(200);
-      const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`);
+      const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`).set('Authorization', `Bearer ${token}`);
       expect(res2.status).toBe(200);
       expect(res2.body.Emprestimo).toHaveProperty('status', 'Devolvido');
     });
@@ -89,12 +97,41 @@ describe('Agrupando Testes de emprestimos', () => {
      livroId: novoLivro.id
      });
 
-     const res = await request(app).delete(`/emprestimos/${novoEmprestimo.id}`);
+     const res = await request(app).delete(`/emprestimos/${novoEmprestimo.id}`).set('Authorization', `Bearer ${token}`);
      expect(res.status).toBe(200);
-     const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`);
+     const res2 = await request(app).get(`/emprestimos/${novoEmprestimo.id}`).set('Authorization', `Bearer ${token}`);
      expect(res2.status).toBe(404);
      expect(res2.body).toHaveProperty('message', 'Emprestimo nao encontrado')
     })
+
+    it('Deve retornar 401 ao listar emprestimos sem token', async () =>{
+      const res = await request(app).get("/emprestimos");
+      expect(res.status).toBe(401);
+    });
+
+    it('Deve retornar 401 ao criar emprestimo sem token e não gravar nada', async () =>{
+      const res = await request(app).post("/emprestimos").send({
+        data_emprestimo: '2026-09-01',
+        devolucao_prevista: '2026-09-15',
+        status: 'Emprestado',
+        pessoaId: novaPessoa.id,
+        livroId: novoLivro.id
+      });
+      expect(res.status).toBe(401);
+
+      const lista = await request(app).get("/emprestimos").set('Authorization', `Bearer ${token}`);
+      expect(lista.body.Emprestimo).toEqual([]);
+    });
+
+    it('Deve retornar 401 ao atualizar emprestimo sem token', async () =>{
+      const res = await request(app).put("/emprestimos/1").send({ status: 'Devolvido' });
+      expect(res.status).toBe(401);
+    });
+
+    it('Deve retornar 401 ao deletar emprestimo sem token', async () =>{
+      const res = await request(app).delete("/emprestimos/1");
+      expect(res.status).toBe(401);
+    });
 
      afterAll(async () => {
          await db.sequelize.close();

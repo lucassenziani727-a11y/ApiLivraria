@@ -1,9 +1,17 @@
 import request from 'supertest';
 import { describe, it, expect, beforeEach, afterAll } from '@jest/globals';
+import jwt from 'jsonwebtoken';
 import app from '../app.js';
 import db from '../models/index.cjs'
+import jwtConfig from '../config/jwt.js';
 
 const autor = db.Autor
+
+const token = jwt.sign(
+    { id: 1, email: 'teste@teste.com' },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.accessExpiresIn }
+);
 
 describe('Agrupando testes dos autores', () =>{
     beforeEach(async () =>{
@@ -21,7 +29,7 @@ describe('Agrupando testes dos autores', () =>{
            nome: "Isabelle",
            data_nascimento: "2007-02-01"
         });
-        const res = await request(app).post('/autores').send(novoAutor);
+        const res = await request(app).post('/autores').send(novoAutor).set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(201);
         expect(res.body.Autor).toHaveProperty('nome', 'Isabelle');
     });
@@ -30,7 +38,7 @@ describe('Agrupando testes dos autores', () =>{
         const novoAutor = ({
            data_nascimento: "2007-02-01"
         });
-        const res = await request(app).post('/autores').send(novoAutor);
+        const res = await request(app).post('/autores').send(novoAutor).set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(400);
         expect(res.body).toHaveProperty('message', 'nao foi possivel fazer o cadastro');
     });
@@ -40,7 +48,7 @@ describe('Agrupando testes dos autores', () =>{
            nome: "J.K. Rowling",
            data_nascimento: "1940-07-31"
         });
-        const res = await request(app).post('/autores').send(novoAutor);
+        const res = await request(app).post('/autores').send(novoAutor).set('Authorization', `Bearer ${token}`);
         const id = res.body.Autor.id;
         
         const res2 = await request(app).get(`/autores/${id}`);
@@ -60,7 +68,7 @@ describe('Agrupando testes dos autores', () =>{
             nome: 'Henrique',
             data_nascimento: '2001-12-02',
         });
-        const res = await request(app).put(`/autores/${novoAutor.id}`).send({nome: 'Novo nome'});
+        const res = await request(app).put(`/autores/${novoAutor.id}`).send({nome: 'Novo nome'}).set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(200);
         const res2 = await request(app).get(`/autores/${novoAutor.id}`);
         expect(res2.status).toBe(200);
@@ -72,11 +80,29 @@ describe('Agrupando testes dos autores', () =>{
             nome: 'Henrique',
             data_nascimento: '2001-12-02',
         });
-        const res = await request(app).delete(`/autores/${novoAutor.id}`);
+        const res = await request(app).delete(`/autores/${novoAutor.id}`).set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(200);
         const res2 = await request(app).get(`/autores/${novoAutor.id}`);
         expect(res2.status).toBe(404);
         expect(res2.body).toHaveProperty('message','autor nao encontrado');
+    });
+
+    it('Deve retornar 401 ao criar autor sem token e não gravar nada', async () =>{
+        const res = await request(app).post('/autores').send({ nome: 'Sem Token', data_nascimento: '2000-01-01' });
+        expect(res.status).toBe(401);
+
+        const lista = await request(app).get('/autores');
+        expect(lista.body.Autor).toEqual([]);
+    });
+
+    it('Deve retornar 401 ao atualizar autor sem token', async () =>{
+        const res = await request(app).put('/autores/1').send({ nome: 'Sem Token' });
+        expect(res.status).toBe(401);
+    });
+
+    it('Deve retornar 401 ao deletar autor sem token', async () =>{
+        const res = await request(app).delete('/autores/1');
+        expect(res.status).toBe(401);
     });
 
     afterAll(async () => {
